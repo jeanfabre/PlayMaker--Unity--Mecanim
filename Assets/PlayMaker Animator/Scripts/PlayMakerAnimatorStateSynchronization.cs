@@ -103,7 +103,9 @@ public class PlayMakerAnimatorStateSynchronization : MonoBehaviour
 					FsmState _fsmState = fsmStateLUT[_currentTransitionUserName];
 					if (Fsm.Fsm.ActiveState!=_fsmState)
 					{
-						Fsm.Fsm.SwitchState(_fsmState);
+						SwitchState(Fsm.Fsm,_fsmState);
+						// Only in 1.8
+						//Fsm.Fsm.SwitchState(_fsmState);
 						hasSwitchedState = true;
 					}
 				}
@@ -114,7 +116,9 @@ public class PlayMakerAnimatorStateSynchronization : MonoBehaviour
 					FsmState _fsmState = fsmStateLUT[_currentTransition];
 					if (Fsm.Fsm.ActiveState!=_fsmState)
 					{
-						Fsm.Fsm.SwitchState(_fsmState);
+						SwitchState(Fsm.Fsm,_fsmState);
+						// Only in 1.8
+						//Fsm.Fsm.SwitchState(_fsmState);
 						hasSwitchedState = true;
 					}
 				}
@@ -141,7 +145,9 @@ public class PlayMakerAnimatorStateSynchronization : MonoBehaviour
 					FsmState _fsmState = fsmStateLUT[_currentState];
 					if (Fsm.Fsm.ActiveState!=_fsmState)
 					{
-						Fsm.Fsm.SwitchState(_fsmState);
+						SwitchState(Fsm.Fsm,_fsmState);
+						// Only in 1.8
+						//Fsm.Fsm.SwitchState(_fsmState);
 					}
 				}else{
 					if (debug) Debug.LogWarning("Fsm is missing animator state hash:"+_currentState);
@@ -152,10 +158,16 @@ public class PlayMakerAnimatorStateSynchronization : MonoBehaviour
 			}
 		}
 
-
-	
 	}
 
+	void SwitchState(Fsm fsm, FsmState state)
+	{
+		MethodInfo switchState = fsm.GetType().GetMethod("SwitchState", BindingFlags.NonPublic | BindingFlags.Instance);
+		if (switchState!=null)
+		{
+			switchState.Invoke(fsm , new object[] { state });
+		}
+	}
 
 }
 
