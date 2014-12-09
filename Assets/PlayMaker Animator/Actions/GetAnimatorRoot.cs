@@ -5,44 +5,46 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory("Animator")]
-	[Tooltip("Gets the value of a vector3 parameter")]
-	[HelpUrl("https://hutonggames.fogbugz.com/default.asp?W1059")]
-	public class GetAnimatorVector3 : FsmStateAction
+	[Tooltip("Gets the avatar body mass center position and rotation.Optionally accept a GameObject to get the body transform. \nThe position and rotation are local to the gameobject")]
+	[HelpUrl("https://hutonggames.fogbugz.com/default.asp?W1036")]
+	public class GetAnimatorRoot: FsmStateAction
 	{
 		[RequiredField]
 		[CheckForComponent(typeof(Animator))]
-		[Tooltip("The target. An Animator component and a PlayMakerAnimatorProxy component are required")]
+		[Tooltip("The target.")]
 		public FsmOwnerDefault gameObject;
 		
-		[Tooltip("The animator parameter")]
-		public FsmString parameter;
-		
-		[Tooltip("Repeat every frame. Useful when value is subject to change over time.")]
+		[Tooltip("Repeat every frame. Useful when changing over time.")]
 		public bool everyFrame;
 		
 		[ActionSection("Results")]
-		
-		[RequiredField]
+			
 		[UIHint(UIHint.Variable)]
-		[Tooltip("The Vector3 value of the animator parameter")]
-		public FsmVector3 result;
+		[Tooltip("The avatar body mass center")]
+		public FsmVector3 rootPosition;
+
+		[UIHint(UIHint.Variable)]
+		[Tooltip("The avatar body mass center")]
+		public FsmQuaternion rootRotation;
+		
+		[Tooltip("If set, apply the body mass center position and rotation to this gameObject")]
+		public FsmGameObject bodyGameObject;
 		
 		private PlayMakerAnimatorMoveProxy _animatorProxy;
 		
 		private Animator _animator;
 		
-		private int _paramID;
+		private Transform _transform;
 		
 		public override void Reset()
 		{
 			gameObject = null;
-			parameter = null;
-			result = null;
+			rootPosition= null;
+			rootRotation = null;
+			bodyGameObject = null;
 			everyFrame = false;
 		}
 		
-		
-		// Code that runs on entering the state.
 		public override void OnEnter()
 		{
 			// get the animator component
@@ -68,22 +70,27 @@ namespace HutongGames.PlayMaker.Actions
 				_animatorProxy.OnAnimatorMoveEvent += OnAnimatorMoveEvent;
 			}
 			
-			// get hash from the param for efficiency:
-			_paramID = Animator.StringToHash(parameter.Value);
 			
-			GetParameter();
+			GameObject _body = bodyGameObject.Value;
+			if (_body!=null)
+			{
+				_transform = _body.transform;
+			}
 			
-			if (!everyFrame) 
+			DoGetBodyPosition();
+			
+			if (!everyFrame)
 			{
 				Finish();
 			}
+			
 		}
 	
 		public void OnAnimatorMoveEvent()
 		{
 			if (_animatorProxy!=null)
 			{
-				GetParameter();
+				DoGetBodyPosition();
 			}
 		}	
 		
@@ -91,15 +98,24 @@ namespace HutongGames.PlayMaker.Actions
 		{
 			if (_animatorProxy==null)
 			{
-				GetParameter();
+				DoGetBodyPosition();
 			}
 		}
 		
-		void GetParameter()
+		void DoGetBodyPosition()
 		{		
-			if (_animator!=null)
+			if (_animator==null)
 			{
-				result.Value = _animator.GetVector(_paramID);
+				return;
+			}
+			
+			rootPosition.Value = _animator.rootPosition;
+			rootRotation.Value = _animator.rootRotation;
+			
+			if (_transform!=null)
+			{
+				_transform.position = _animator.rootPosition;
+				_transform.rotation = _animator.rootRotation;
 			}
 		}
 		

@@ -5,24 +5,28 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory("Animator")]
-	[Tooltip("When turned on, animations will be executed in the physics loop. This is only useful in conjunction with kinematic rigidbodies.")]
-	[HelpUrl("https://hutonggames.fogbugz.com/default.asp?W1060")]
-	public class SetAnimatorAnimatePhysics: FsmStateAction
+	[Tooltip("Sets the playback speed of the Animator. 1 is normal playback speed")]
+	[HelpUrl("https://hutonggames.fogbugz.com/default.asp?W1072")]
+	public class SetAnimatorSpeed: FsmStateAction
 	{
 		[RequiredField]
 		[CheckForComponent(typeof(Animator))]
 		[Tooltip("The Target. An Animator component is required")]
 		public FsmOwnerDefault gameObject;
 		
-		[Tooltip("If true, animations will be executed in the physics loop. This is only useful in conjunction with kinematic rigidbodies.")]
-		public FsmBool animatePhysics;
+		[Tooltip("The playBack speed")]
+		public FsmFloat speed;
+		
+		[Tooltip("Repeat every frame. Useful for changing over time.")]
+		public bool everyFrame;
 		
 		private Animator _animator;
 		
 		public override void Reset()
 		{
 			gameObject = null;
-			animatePhysics= null;
+			speed= null;
+			everyFrame = false;
 		}
 		
 		public override void OnEnter()
@@ -44,20 +48,28 @@ namespace HutongGames.PlayMaker.Actions
 				return;
 			}
 			
-			DoAnimatePhysics();
+			DoPlaybackSpeed();
 			
-			Finish();
-			
+			if (!everyFrame) 
+			{
+				Finish();
+			}
 		}
 	
-		void DoAnimatePhysics()
+		public override void OnUpdate()
+		{
+			DoPlaybackSpeed();
+		}
+		
+	
+		void DoPlaybackSpeed()
 		{		
 			if (_animator==null)
 			{
 				return;
 			}
 			
-			_animator.animatePhysics = animatePhysics.Value;
+			_animator.speed = speed.Value;
 			
 		}
 		
