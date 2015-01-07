@@ -1,18 +1,20 @@
-// (c) Copyright HutongGames, LLC 2010-2013. All rights reserved.
+// (c) Copyright HutongGames, LLC 2010-2015. All rights reserved.
 
+using System;
 using UnityEngine;
 
 namespace HutongGames.PlayMaker.Actions
 {
-	[ActionCategory("Animator")]
-	#if UNITY_4_6_0
-	[Note("This action is obsolete. Use mask and layers to control subset of transforms in a skeleton")]
+	#if UNITY_4_6
+	[Obsolete("This action is obsolete. Use mask and layers to control subset of transforms in a skeleton")]
 	#endif
+	
+	[ActionCategory("Animator")]
 
 	[Tooltip("Returns true if a transform is controlled by the Animator. Can also send events")]
 	public class GetAnimatorIsControlled: FsmStateAction
 	{
-#if UNITY_4_6_0
+#if UNITY_4_6
 
 #else
 		[RequiredField]
@@ -90,7 +92,8 @@ namespace HutongGames.PlayMaker.Actions
 			{
 				return;
 			}
-			
+
+
 			bool _isControlled = _animator.IsControlled(_transform);
 			isControlled.Value = _isControlled;
 			
