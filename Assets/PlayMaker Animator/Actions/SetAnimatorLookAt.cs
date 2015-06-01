@@ -10,9 +10,9 @@ namespace HutongGames.PlayMaker.Actions
 	public class SetAnimatorLookAt: FsmStateAction
 	{
 		[RequiredField]
-		//[CheckForComponent(typeof(PlayMakerAnimatorProxy))]
+		[CheckForComponent(typeof(PlayMakerAnimatorIKProxy))]
 		[CheckForComponent(typeof(Animator))]
-		[Tooltip("The target. An Animator component and a PlayMakerAnimatorProxy component are required")]
+		[Tooltip("The target. An Animator component is required. Use a PlayMakerAnimatorIKProxy component to update the look at during the OnAnimatorIK() update.")]
 		public FsmOwnerDefault gameObject;
 		
 		[Tooltip("The gameObject to look at")]
@@ -44,7 +44,7 @@ namespace HutongGames.PlayMaker.Actions
 		[Tooltip("Repeat every frame. Useful for changing over time.")]
 		public bool everyFrame;
 		
-		private PlayMakerAnimatorMoveProxy _animatorProxy;
+		private PlayMakerAnimatorIKProxy _animatorProxy;
 		
 		private Animator _animator;
 		
@@ -89,10 +89,10 @@ namespace HutongGames.PlayMaker.Actions
 				_transform = _target.transform;
 			}
 			
-			_animatorProxy = go.GetComponent<PlayMakerAnimatorMoveProxy>();
+			_animatorProxy = go.GetComponent<PlayMakerAnimatorIKProxy>();
 			if (_animatorProxy!=null)
 			{
-				_animatorProxy.OnAnimatorMoveEvent += OnAnimatorMoveEvent;
+				_animatorProxy.OnAnimatorIKEvent += OnAnimatorIKEvent;
 			}
 			
 			
@@ -104,7 +104,7 @@ namespace HutongGames.PlayMaker.Actions
 			}
 		}
 	
-		public void OnAnimatorMoveEvent()
+		public void OnAnimatorIKEvent(int layerIndex)
 		{
 			if (_animatorProxy!=null)
 			{
@@ -169,7 +169,7 @@ namespace HutongGames.PlayMaker.Actions
 		{
 			if (_animatorProxy!=null)
 			{
-				_animatorProxy.OnAnimatorMoveEvent -= OnAnimatorMoveEvent;
+				_animatorProxy.OnAnimatorIKEvent -= OnAnimatorIKEvent;
 			}
 		}
 	}
