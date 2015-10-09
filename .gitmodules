@@ -1,6 +1,3 @@
-[submodule "Assets/PlayMaker Animator"]
-	path = Assets/PlayMaker Animator
-	url = https://jeanfabre@github.com/jeanfabre/PlayMaker--Unity--Animator_U4-SubModule-.git
 [submodule "Assets/PlayMaker Utils"]
 	path = Assets/PlayMaker Utils
 	url = https://jeanfabre@github.com/jeanfabre/PlayMaker--Utils.git
